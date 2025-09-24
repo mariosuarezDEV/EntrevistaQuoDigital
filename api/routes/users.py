@@ -1,8 +1,9 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, Flask
 from models.users import UsersModel, db
 
 # Create a Blueprint for user-related routes
 bp = Blueprint("users", __name__, url_prefix="/users")
+app = Flask(__name__)
 
 
 @bp.get("/")
@@ -14,7 +15,7 @@ def get_users():
     """
     try:
         users = UsersModel.query.all()
-        bp.logger.info(f"Retrieved {len(users)} users from the database.")
+        app.logger.info(f"Retrieved {len(users)} users from the database.")
         return {
             "users": {
                 user.name: {
@@ -25,6 +26,7 @@ def get_users():
             }
         }, 200
     except Exception as e:
+        app.logger.error(f"Error retrieving users: {e}")
         return {"error": str(e)}, 500
 
 
@@ -39,8 +41,10 @@ def create_user():
     """
     data = request.get_json()
     if not data:
+        app.logger.warning("No input data provided")
         return {"error": "No input data provided"}, 400
     elif "name" not in data or "email" not in data:
+        app.logger.warning("Missing 'name' or 'email' in input data")
         return {"error": "Missing 'name' or 'email' in input data"}, 400
 
     name = data.get("name")
@@ -51,9 +55,11 @@ def create_user():
         new_user = UsersModel(name=name, email=email)
         db.session.add(new_user)
         db.session.commit()
+        app.logger.info(f"User {name} created successfully.")
         return {"message": "User created"}, 201
     # controlar caso de email duplicado
     except Exception as e:
+        app.logger.error(f"Error creating user: {e}")
         if "UNIQUE constraint failed" in str(e):
             return {"error": "Email already exists"}, 400
         return {"error": str(e)}, 500
