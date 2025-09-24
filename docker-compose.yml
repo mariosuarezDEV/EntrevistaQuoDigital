@@ -12,8 +12,21 @@ services:
     networks:
       - entrevista_red
   flask:
-    build: ./backend
-    command: flask run --host=
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    depends_on:
+      - database
+    environment:
+      DB_HOST: database
+      DB_PORT: 5432
+      DB_NAME: ${NAME}
+      DB_USER: ${USER}
+      DB_PASSWORD: ${PASSWORD}
+    networks:
+      - entrevista_red
 volumes:
   db_data:
 networks:
