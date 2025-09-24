@@ -1,0 +1,20 @@
+# Ignorar entornos virtuales
+.venv
+venv
+__pycache__
+
+# Ignorar configs locales
+*.pyc
+*.pyo
+*.pyd
+*.db
+
+# Ignorar cachés
+*.egg-info
+.eggs
+*.pytest_cache
+.mypy_cache
+
+# Ignorar git
+.git
+.gitignore
