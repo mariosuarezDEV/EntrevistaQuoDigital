@@ -1,0 +1,21 @@
+services:
+  database:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${USER}
+      POSTGRES_PASSWORD: ${PASSWORD}
+      POSTGRES_DB: ${NAME}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - entrevista_red
+  flask:
+    build: ./backend
+    command: flask run --host=
+volumes:
+  db_data:
+networks:
+  entrevista_red:
+    driver: bridge
